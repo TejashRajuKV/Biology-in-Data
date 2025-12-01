@@ -164,11 +164,17 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
 
       {/* Download Buttons */}
       <div className="flex gap-5 pt-4 border-t-2 border-[#E8F5E9]" style={{ flexShrink: 0 }}>
-        <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2E7D32] text-white rounded-lg hover:bg-[#1B5E20] hover:shadow-lg transition-all">
+        <button
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg hover:shadow-lg transition-all border-none"
+          style={{ backgroundColor: '#2E7D32', color: '#ffffff', border: 'none' }}
+        >
           <Download className="w-4 h-4" />
           Download Data
         </button>
-        <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2E7D32] text-white rounded-lg hover:bg-[#1B5E20] hover:shadow-lg transition-all">
+        <button
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg hover:shadow-lg transition-all border-none"
+          style={{ backgroundColor: '#2E7D32', color: '#ffffff', border: 'none' }}
+        >
           <Download className="w-4 h-4" />
           Download Figure
         </button>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Download, Maximize2, X } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -97,6 +98,30 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
     }
   };
 
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    // lock background scroll and setup keyboard handler for Escape
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e) => {
+      if (e.key === "Escape") setIsFullscreen(false);
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    // focus the modal content for keyboard users
+    setTimeout(() => chartRef.current?.focus(), 0);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isFullscreen]);
+
   const chartContent = (
     <div 
       className={isFullscreen ? "bg-white rounded-xl p-6 shadow-2xl flex flex-col" : "bg-white border-2 border-[#C8E6C9] rounded-xl p-6 shadow-lg hover:shadow-xl transition-all"} 
@@ -152,10 +177,21 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
   );
 
   if (isFullscreen) {
-    return (
-      <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-8">
-        {chartContent}
-      </div>
+    return createPortal(
+      <div
+        className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-8"
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => {
+          // if user clicked on the overlay (not the inner chart), close
+          if (e.target === e.currentTarget) setIsFullscreen(false);
+        }}
+      >
+        <div tabIndex={-1} ref={chartRef}>
+          {chartContent}
+        </div>
+      </div>,
+      document.body,
     );
   }
 

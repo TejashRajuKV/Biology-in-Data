@@ -5,6 +5,11 @@ import { LineChart, Line, BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, Ca
 
 export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y", yKey2 }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // local selection so user can change chart type at runtime
+  const [selectedType, setSelectedType] = useState(type);
+
+  // keep local selection in sync if caller changes `type` prop
+  useEffect(() => setSelectedType(type), [type]);
   
   const renderChart = () => {
     if (!data || data.length === 0) {
@@ -27,7 +32,7 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
       margin: { top: 20, right: 30, left: 20, bottom: 20 },
     };
 
-    switch (type) {
+    switch (selectedType) {
       case "bar":
         return (
           <ResponsiveContainer width="100%" height="100%" minHeight={300}>
@@ -159,6 +164,30 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
           </div>
         </div>
         <div className="flex gap-2" style={{ alignItems: 'flex-start' }}>
+          {/* chart type selector (line / bar / scatter) */}
+          <label htmlFor="chart-type-select" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span className="sr-only">Chart type</span>
+            <select
+              id="chart-type-select"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              style={{
+                height: 36,
+                borderRadius: 8,
+                padding: '6px 10px',
+                border: '1px solid #e0e0e0',
+                background: '#fff',
+                color: '#2c3e50',
+                fontSize: 14,
+                cursor: 'pointer',
+              }}
+              aria-label="Select chart type"
+            >
+              <option value="line">Line</option>
+              <option value="bar">Bar</option>
+              <option value="scatter">Scatter</option>
+            </select>
+          </label>
           <button 
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="p-2.5 hover:bg-[#E8F5E9] rounded-lg transition-all group border border-[#e0e0e0] hover:border-[#66BB6A]"

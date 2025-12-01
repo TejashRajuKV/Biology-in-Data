@@ -1,15 +1,15 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./src/contexts/AuthContext";
-import { ProtectedRoute } from "./src/components/ProtectedRoute";
-import { Navbar } from "./src/components/NavbarNew";
-import { Footer } from "./src/components/FooterNew";
-import { HomePage } from "./src/pages/HomePageNew";
-import { ResearchListPage } from "./src/pages/ResearchListPageNew";
-import { ResearchDetailPage } from "./src/pages/ResearchDetailPageNew";
-import { LoginPage } from "./src/pages/LoginPageNew";
-import { AdminLoginPage } from "./src/pages/AdminLoginPage";
-import { AdminDashboard } from "./src/pages/AdminDashboardNew";
-import { UserProfilePage } from "./src/pages/UserProfilePage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Navbar } from "./components/NavbarNew";
+import { Footer } from "./components/FooterNew";
+import { HomePage } from "./pages/HomePageNew";
+import { ResearchListPage } from "./pages/ResearchListPageNew";
+import { ResearchDetailPage } from "./pages/ResearchDetailPageNew";
+import { LoginPage } from "./pages/LoginPageNew";
+import { AdminLoginPage } from "./pages/AdminLoginPage";
+import { AdminDashboard } from "./pages/AdminDashboardNew";
+import { UserProfilePage } from "./pages/UserProfilePage";
 
 export default function App() {
   return (

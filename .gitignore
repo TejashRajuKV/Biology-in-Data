@@ -12,3 +12,4 @@ dist/
 
 # logs
 npm-debug.log*
+\n# build output\nbuild/

@@ -29,9 +29,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #2c3e50;
+  color: #4b5563; /* lighter, less prominent */
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400; /* reduce boldness */
+  font-size: 0.95rem; /* slightly smaller */
   transition: color 0.2s;
 }
 
@@ -86,7 +87,8 @@
   padding: 3rem 2rem;
   display: grid;
   grid-template-columns: 1fr 500px;
-  gap: 3rem;
+  /* increase spacing between findings and chart column for better breathing room */
+  gap: 3.75rem;
 }
 
 .leftPanel {

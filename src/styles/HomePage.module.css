@@ -6,7 +6,8 @@
 
 .hero {
   background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
-  padding: 4rem 0;
+  /* reduced top padding so the header and hero feel closer (10–15px smaller) */
+  padding: 3.25rem 0;
   position: relative;
   overflow: hidden;
 }

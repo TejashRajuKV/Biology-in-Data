@@ -1015,7 +1015,8 @@
 
 .hero {
   background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-  padding: 4rem 0;
+  /* reduce top padding between navbar and hero by ~12px */
+  padding: 3.25rem 0;
   position: relative;
   overflow: hidden;
 }

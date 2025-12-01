@@ -129,7 +129,7 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
 
   const chartContent = (
     <div
-      className={isFullscreen ? "bg-white rounded-xl p-6 shadow-2xl flex flex-col" : "bg-white rounded-xl p-6 transition-all"}
+      className={isFullscreen ? "bg-white rounded-xl p-6 shadow-2xl flex flex-col" : "bg-white rounded-xl p-5 transition-all"}
       style={
         isFullscreen
           ? { width: '90vw', height: '90vh', maxHeight: '90vh' }
@@ -137,7 +137,8 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
               width: '100%',
               // stronger card look to make the chart feel more like a card
               border: '1px solid var(--light-mint, #C8E6C9)',
-              boxShadow: '0 12px 28px rgba(16,24,32,0.08)',
+              /* softer, lighter card shadow for a polished look */
+              boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
               background: 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.99))',
             }
       }
@@ -164,7 +165,10 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
           </div>
         </div>
         <div className="flex gap-2" style={{ alignItems: 'flex-start' }}>
-          {/* chart type selector (line / bar / scatter) */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
+            <span style={{ color: '#4b5563', fontSize: 13, fontWeight: 400 }}>Chart type</span>
+            {/* chart type selector (line / bar / scatter) */}
+          </div>
           <label htmlFor="chart-type-select" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span className="sr-only">Chart type</span>
             <select

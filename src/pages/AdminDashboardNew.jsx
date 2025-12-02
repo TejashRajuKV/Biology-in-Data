@@ -86,6 +86,8 @@ function UploadSection() {
   });
 
   // helper: push formData to backend (POST /api/research)
+  const [loading, setLoading] = useState(false);
+
   const saveResearch = async (payload) => {
     try {
       const res = await fetch("http://localhost:4000/api/research", {
@@ -95,8 +97,16 @@ function UploadSection() {
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to save research");
+        // prefer JSON error payloads, otherwise text
+        let errorMessage = res.statusText || 'Failed to save research';
+        try {
+          const jsonErr = await res.json();
+          errorMessage = jsonErr.error || jsonErr.message || errorMessage;
+        } catch (e) {
+          const text = await res.text().catch(() => null);
+          if (text) errorMessage = text;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();
@@ -110,6 +120,13 @@ function UploadSection() {
   // when user clicks 'Save' — validate then send to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // basic client-side validation
+    if (!formData.title.trim()) return alert('Title is required');
+    if (!formData.authors.trim()) return alert('Authors are required');
+    // authors should resolve to at least one author
+    const splitAuthors = formData.authors.split(',').map(s=>s.trim()).filter(Boolean);
+    if (splitAuthors.length === 0) return alert('Provide at least one author');
+    setLoading(true);
     try {
       // prepare proper payload for backend (authors -> array, tags -> array)
       const payload = {
@@ -122,9 +139,9 @@ function UploadSection() {
         chartJson: formData.chartJson ? JSON.parse(formData.chartJson) : null,
       };
 
-      await saveResearch(payload);
+      const result = await saveResearch(payload);
 
-      alert("Research uploaded successfully!");
+      alert("Research uploaded successfully! id: " + (result.id || 'n/a'));
       setFormData({
       title: "",
       authors: "",
@@ -136,7 +153,10 @@ function UploadSection() {
     });
     } catch (err) {
       console.error(err);
-      alert("Failed to upload research — check console for details.");
+      // surface helpful message to the user
+      alert(`Failed to upload research — ${err?.message || 'check console for details'}`);
+    } finally {
+      setLoading(false);
     }
   };
 

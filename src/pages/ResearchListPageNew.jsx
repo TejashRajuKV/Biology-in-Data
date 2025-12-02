@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "../components/SearchBarNew";
 import { ResearchCard } from "../components/ResearchCardNew";
 import { mockResearch, categories } from "../lib/mockData";
@@ -9,8 +9,31 @@ export function ResearchListPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
+  const [researchData, setResearchData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResearch = mockResearch.filter((research) => {
+  useEffect(() => {
+    const fetchResearch = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/research");
+        if (response.ok) {
+          const data = await response.json();
+          setResearchData(data);
+        } else {
+          console.error("Failed to fetch research data");
+          setResearchData(mockResearch);
+        }
+      } catch (error) {
+        console.error("Error fetching research:", error);
+        setResearchData(mockResearch);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResearch();
+  }, []);
+
+  const filteredResearch = researchData.filter((research) => {
     const matchesSearch =
       research.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       research.abstract.toLowerCase().includes(searchQuery.toLowerCase()) ||

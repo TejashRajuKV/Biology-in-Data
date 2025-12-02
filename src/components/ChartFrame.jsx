@@ -11,6 +11,82 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
   // keep local selection in sync if caller changes `type` prop
   useEffect(() => setSelectedType(type), [type]);
   
+  const generateQuickChart = () => {
+    if (!data || data.length === 0) return null;
+
+    const keys = Object.keys(data[0]);
+    const labels = data.map(item => item[keys[0]]);
+    const values = data.map(item => item[keys[1]]);
+
+    let chartConfig;
+    switch (selectedType) {
+      case "bar":
+        chartConfig = {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: keys[1],
+              data: values,
+              backgroundColor: '#66BB6A',
+              borderColor: '#2E7D32',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: { display: true, text: title }
+            }
+          }
+        };
+        break;
+      case "scatter":
+        chartConfig = {
+          type: 'scatter',
+          data: {
+            datasets: [{
+              label: 'Data Points',
+              data: data.map(item => ({ x: item[keys[0]], y: item[keys[1]] })),
+              backgroundColor: '#66BB6A',
+              borderColor: '#2E7D32'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: { display: true, text: title }
+            }
+          }
+        };
+        break;
+      case "line":
+      default:
+        chartConfig = {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: keys[1],
+              data: values,
+              borderColor: '#66BB6A',
+              backgroundColor: 'rgba(102, 187, 106, 0.1)',
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: { display: true, text: title }
+            }
+          }
+        };
+    }
+
+    const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
+    return chartUrl;
+  };
+
   const renderChart = () => {
     if (!data || data.length === 0) {
       return (
@@ -27,80 +103,25 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
       );
     }
 
-    const commonProps = {
-      data,
-      margin: { top: 20, right: 30, left: 20, bottom: 20 },
-    };
+    const chartUrl = generateQuickChart();
+    if (!chartUrl) return null;
 
-    switch (selectedType) {
-      case "bar":
-        return (
-          <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-            <BarChart {...commonProps}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis dataKey={Object.keys(data[0])[0]} stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <YAxis stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "white", 
-                  border: "2px solid #66BB6A",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                }} 
-              />
-              <Legend wrapperStyle={{ fontSize: '14px' }} />
-              <Bar dataKey={Object.keys(data[0])[1]} fill="#66BB6A" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        );
-
-      case "scatter":
-        return (
-          <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-            <ScatterChart {...commonProps}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis dataKey={Object.keys(data[0])[0]} stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <YAxis dataKey={Object.keys(data[0])[1]} stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "white", 
-                  border: "2px solid #66BB6A",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                }} 
-              />
-              <Scatter name="Data Points" data={data} fill="#66BB6A" />
-            </ScatterChart>
-          </ResponsiveContainer>
-        );
-
-      case "line":
-      default:
-        const keys = Object.keys(data[0]);
-        const dataKey1 = keys[1];
-        const dataKey2 = keys[2];
-        
-        return (
-          <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-            <LineChart {...commonProps}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis dataKey={keys[0]} stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <YAxis stroke="#5a6c7d" style={{ fontSize: '14px' }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "white", 
-                  border: "2px solid #66BB6A",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                }} 
-              />
-              <Legend wrapperStyle={{ fontSize: '14px' }} />
-              <Line type="monotone" dataKey={dataKey1} stroke="#66BB6A" strokeWidth={3} dot={{ fill: "#66BB6A", r: 5 }} />
-              {dataKey2 && <Line type="monotone" dataKey={dataKey2} stroke="#2E7D32" strokeWidth={3} dot={{ fill: "#2E7D32", r: 5 }} />}
-            </LineChart>
-          </ResponsiveContainer>
-        );
-    }
+    return (
+      <img 
+        src={chartUrl} 
+        alt={`${selectedType} chart for ${title}`}
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'contain',
+          borderRadius: '8px'
+        }}
+        onError={(e) => {
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'flex';
+        }}
+      />
+    );
   };
 
   const chartRef = useRef(null);

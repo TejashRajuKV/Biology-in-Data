@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { SearchBar } from "../components/SearchBarNew";
 import { CategoryChips } from "../components/CategoryChipsNew";
@@ -11,9 +11,28 @@ import styles from "../styles/HomePage.module.css";
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [researchData, setResearchData] = useState([]);
+
+  useEffect(() => {
+    const fetchResearch = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/research");
+        if (response.ok) {
+          const data = await response.json();
+          setResearchData(data);
+        } else {
+          setResearchData(mockResearch);
+        }
+      } catch (error) {
+        console.error("Error fetching research:", error);
+        setResearchData(mockResearch);
+      }
+    };
+    fetchResearch();
+  }, []);
 
   // Filter research based on search query and selected category
-  const filteredResearch = mockResearch.filter((research) => {
+  const filteredResearch = researchData.filter((research) => {
     const matchesSearch =
       searchQuery === "" ||
       research.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

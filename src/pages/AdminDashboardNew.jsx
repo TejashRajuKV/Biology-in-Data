@@ -317,17 +317,7 @@ function UploadSection({ onSaved }) {
           />
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Chart Data (JSON)</label>
-          <textarea
-            value={formData.chartJson}
-            onChange={(e) => setFormData({ ...formData, chartJson: e.target.value })}
-            rows={4}
-            className={styles.formTextarea}
-            placeholder='{"type": "line", "data": [...]}'
-            style={{ fontFamily: "monospace", fontSize: "0.875rem" }}
-          />
-        </div>
+
 
         <div className={styles.formActions}>
           <button type="submit" disabled={loading} className={styles.primaryButton}>
@@ -442,15 +432,7 @@ function ChartsSection() {
           </select>
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Chart Data (JSON Format)</label>
-          <textarea
-            rows={10}
-            className={styles.formTextarea}
-            placeholder={`[\n  { "week": "Week 1", "value": 100 },\n  { "week": "Week 2", "value": 150 }\n]`}
-            style={{ fontFamily: "monospace", fontSize: "0.875rem" }}
-          />
-        </div>
+
 
         <div className={styles.formActions}>
           <button className={styles.primaryButton}>

@@ -85,10 +85,47 @@ function UploadSection() {
     chartJson: "",
   });
 
-  const handleSubmit = (e) => {
+  // helper: push formData to backend (POST /api/research)
+  const saveResearch = async (payload) => {
+    try {
+      const res = await fetch("http://localhost:4000/api/research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to save research");
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("Save error:", err);
+      throw err;
+    }
+  };
+
+  // when user clicks 'Save' — validate then send to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Research uploaded successfully!");
-    setFormData({
+    try {
+      // prepare proper payload for backend (authors -> array, tags -> array)
+      const payload = {
+        title: formData.title,
+        authors: formData.authors.split(",").map((s) => s.trim()).filter(Boolean),
+        year: formData.year,
+        category: formData.category,
+        abstract: formData.abstract,
+        tags: formData.tags.split(",").map((s) => s.trim()).filter(Boolean),
+        chartJson: formData.chartJson ? JSON.parse(formData.chartJson) : null,
+      };
+
+      await saveResearch(payload);
+
+      alert("Research uploaded successfully!");
+      setFormData({
       title: "",
       authors: "",
       year: new Date().getFullYear().toString(),
@@ -97,6 +134,53 @@ function UploadSection() {
       tags: "",
       chartJson: "",
     });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload research — check console for details.");
+    }
+  };
+
+  // Handler for uploaded JSON file — accepts only .json files, parses and auto-fills the form
+  const handleFileInput = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".json")) {
+      alert("Please select a .json file");
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+
+      // Mapping as requested
+      // dataset.citation.title → Title
+      // dataset.citation.authors → Authors
+      // dataset.citation.year → Year
+      // dataset.source_name → Category
+      // dataset.description → Abstract
+      // dataset.table_name → Tags
+      // columns → Chart JSON (stringified)
+
+      const dataset = json.dataset || {};
+      const citation = dataset.citation || {};
+
+      setFormData((prev) => ({
+        ...prev,
+        title: citation.title || prev.title,
+        authors: Array.isArray(citation.authors) ? citation.authors.join(", ") : (citation.authors || prev.authors),
+        year: citation.year ? String(citation.year) : prev.year,
+        category: dataset.source_name || prev.category,
+        abstract: dataset.description || prev.abstract,
+        tags: dataset.table_name || prev.tags,
+        chartJson: json.columns ? JSON.stringify(json.columns, null, 2) : prev.chartJson,
+      }));
+
+    } catch (err) {
+      console.error("JSON parse error", err);
+      alert("Failed to parse JSON file. Make sure it follows the expected template.");
+    }
   };
 
   return (
@@ -109,6 +193,17 @@ function UploadSection() {
       </div>
 
       <form onSubmit={handleSubmit} className={styles.adminForm}>
+        {/* JSON file upload (accepts only .json) */}
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel}>Upload JSON (template)</label>
+          <input
+            type="file"
+            accept=".json,application/json"
+            onChange={handleFileInput}
+            className={styles.formInput}
+          />
+          <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: 6 }}>Select a JSON file that follows the project template — fields will auto-fill</small>
+        </div>
         <div className={styles.formGroup}>
           <label className={styles.formLabel}>Title *</label>
           <input

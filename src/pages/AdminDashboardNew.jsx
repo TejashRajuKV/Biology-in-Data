@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, FileText, BarChart3, Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -7,6 +7,23 @@ import styles from "../styles/pages.module.css";
 
 export function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("upload");
+  const [researchList, setResearchList] = useState([]);
+
+  const loadResearch = async () => {
+    try {
+      const resp = await fetch("http://localhost:4000/api/research");
+      if (!resp.ok) throw new Error(`Failed to fetch research: ${resp.status}`);
+      const json = await resp.json();
+      setResearchList(json);
+    } catch (err) {
+      console.error("Unable to load research list:", err);
+      setResearchList([]);
+    }
+  };
+
+  useEffect(() => {
+    loadResearch();
+  }, []);
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -66,15 +83,15 @@ export function AdminDashboard() {
 
       {/* Main Content */}
       <main className={styles.adminMain}>
-        {activeSection === "upload" && <UploadSection />}
-        {activeSection === "manage" && <ManageSection />}
+        {activeSection === "upload" && <UploadSection onSaved={loadResearch} />}
+        {activeSection === "manage" && <ManageSection researchList={researchList} onRefresh={loadResearch} />}
         {activeSection === "charts" && <ChartsSection />}
       </main>
     </div>
   );
 }
 
-function UploadSection() {
+function UploadSection({ onSaved }) {
   const [formData, setFormData] = useState({
     title: "",
     authors: "",
@@ -142,6 +159,8 @@ function UploadSection() {
       const result = await saveResearch(payload);
 
       alert("Research uploaded successfully! id: " + (result.id || 'n/a'));
+      // trigger parent refresh so ManageSection shows the new item
+      if (typeof onSaved === 'function') onSaved();
       setFormData({
       title: "",
       authors: "",
@@ -311,9 +330,9 @@ function UploadSection() {
         </div>
 
         <div className={styles.formActions}>
-          <button type="submit" className={styles.primaryButton}>
+          <button type="submit" disabled={loading} className={styles.primaryButton}>
             <Upload size={20} />
-            Upload Research
+            {loading ? 'Saving...' : 'Upload Research'}
           </button>
           <button type="button" className={styles.secondaryButton}>
             Cancel
@@ -324,7 +343,7 @@ function UploadSection() {
   );
 }
 
-function ManageSection() {
+function ManageSection({ researchList = [], onRefresh } = {}) {
   return (
     <div>
       <div className={styles.adminHeader} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -352,7 +371,7 @@ function ManageSection() {
             </tr>
           </thead>
           <tbody>
-            {mockResearch.slice(0, 5).map((research, index) => (
+            {(researchList && researchList.length ? researchList : mockResearch).slice(0, 50).map((research, index) => (
               <tr key={research.id} style={{ borderBottom: "1px solid var(--border)", background: index % 2 === 0 ? "white" : "var(--gray-50)" }}>
                 <td style={{ padding: "1rem 1.5rem", color: "var(--gray-900)", maxWidth: "400px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {research.title}
@@ -371,8 +390,8 @@ function ManageSection() {
                 </td>
                 <td style={{ padding: "1rem 1.5rem", color: "var(--gray-600)" }}>{research.year}</td>
                 <td style={{ padding: "1rem 1.5rem", color: "var(--gray-600)", maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {research.authors[0]}
-                  {research.authors.length > 1 && ` +${research.authors.length - 1}`}
+                  {Array.isArray(research.authors) ? research.authors[0] : (String(research.authors || '').split(',')[0])}
+                  {Array.isArray(research.authors) && research.authors.length > 1 && ` +${research.authors.length - 1}`}
                 </td>
                 <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
                   <button style={{ padding: "0.5rem", border: "none", background: "transparent", cursor: "pointer", color: "var(--primary-blue)" }}>

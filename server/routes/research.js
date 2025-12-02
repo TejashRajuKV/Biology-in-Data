@@ -32,3 +32,15 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/research
+// returns list of all research documents (most recent first)
+router.get('/', async (req, res) => {
+  try {
+    const docs = await Research.find({}).sort({ createdAt: -1 }).lean();
+    res.json(docs);
+  } catch (err) {
+    console.error('Error fetching research', err);
+    res.status(500).json({ error: 'Server error while fetching research' });
+  }
+});

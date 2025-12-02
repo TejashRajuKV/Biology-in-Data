@@ -1,7 +1,6 @@
 
-  # Biology in Data UI Design
+  # Biology in Data – A Web App to Showcase Research Progress
 
-  This is a code bundle for Biology in Data UI Design. The original project is available at https://www.figma.com/design/j6nNQ6phXiKo3iymqAzVlp/Biology-in-Data-UI-Design.
 
   ## Running the code
 

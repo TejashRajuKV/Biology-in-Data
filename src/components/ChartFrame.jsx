@@ -10,7 +10,7 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
 
   // keep local selection in sync if caller changes `type` prop
   useEffect(() => setSelectedType(type), [type]);
-  
+
   const generateQuickChart = () => {
     if (!data || data.length === 0) return null;
 
@@ -90,13 +90,13 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
   const renderChart = () => {
     if (!data || data.length === 0) {
       return (
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          height: '100%', 
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
           minHeight: '300px',
-          color: '#5a6c7d' 
+          color: '#5a6c7d'
         }}>
           No data available
         </div>
@@ -107,12 +107,12 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
     if (!chartUrl) return null;
 
     return (
-      <img 
-        src={chartUrl} 
+      <img
+        src={chartUrl}
         alt={`${selectedType} chart for ${title}`}
-        style={{ 
-          width: '100%', 
-          height: '100%', 
+        style={{
+          width: '100%',
+          height: '100%',
           objectFit: 'contain',
           borderRadius: '8px'
         }}
@@ -213,7 +213,7 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
               <option value="scatter">Scatter</option>
             </select>
           </label>
-          <button 
+          <button
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="p-2.5 hover:bg-[#E8F5E9] rounded-lg transition-all group border border-[#e0e0e0] hover:border-[#66BB6A]"
             title={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
@@ -229,13 +229,13 @@ export function ChartFrame({ data, type = "line", title, xKey = "x", yKey = "y",
 
       {/* Chart */}
       <div
-        style={{ 
-          width: '100%', 
-          height: isFullscreen ? 'calc(90vh - 240px)' : '400px', 
+        style={{
+          width: '100%',
+          height: isFullscreen ? 'calc(90vh - 240px)' : '400px',
           minHeight: isFullscreen ? '400px' : '300px',
           flex: isFullscreen ? '1 1 auto' : 'none',
           position: 'relative'
-        }} 
+        }}
         className="mb-6 bg-white rounded-lg p-4"
       >
         {renderChart()}

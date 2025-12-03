@@ -13,7 +13,9 @@ export function AdminDashboard() {
     try {
       const resp = await fetch("http://localhost:4000/api/research");
       if (!resp.ok) throw new Error(`Failed to fetch research: ${resp.status}`);
-      const json = await resp.json();
+      let json = await resp.json();
+      // ensure each document has an `id` property (fallback to _id)
+      json = json.map((d) => ({ ...(d || {}), id: d.id ?? d._id }));
       setResearchList(json);
     } catch (err) {
       console.error("Unable to load research list:", err);
@@ -362,7 +364,7 @@ function ManageSection({ researchList = [], onRefresh } = {}) {
           </thead>
           <tbody>
             {(researchList && researchList.length ? researchList : mockResearch).slice(0, 50).map((research, index) => (
-              <tr key={research.id} style={{ borderBottom: "1px solid var(--border)", background: index % 2 === 0 ? "white" : "var(--gray-50)" }}>
+              <tr key={research.id ?? research._id} style={{ borderBottom: "1px solid var(--border)", background: index % 2 === 0 ? "white" : "var(--gray-50)" }}>
                 <td style={{ padding: "1rem 1.5rem", color: "var(--gray-900)", maxWidth: "400px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {research.title}
                 </td>
@@ -416,7 +418,7 @@ function ChartsSection() {
           <select className={styles.formSelect}>
             <option value="">Choose a research paper...</option>
             {mockResearch.map((research) => (
-              <option key={research.id} value={research.id}>
+              <option key={research.id ?? research._id} value={research.id ?? research._id}>
                 {research.title}
               </option>
             ))}

@@ -17,7 +17,9 @@ export function ResearchListPage() {
       try {
         const response = await fetch("http://localhost:4000/api/research");
         if (response.ok) {
-          const data = await response.json();
+          let data = await response.json();
+          // normalize backend objects which may have _id instead of id
+          data = data.map((d) => ({ ...(d || {}), id: d.id ?? d._id }));
           setResearchData(data);
         } else {
           console.error("Failed to fetch research data");
@@ -146,7 +148,7 @@ export function ResearchListPage() {
               }
             >
               {filteredResearch.map((research) => (
-                <ResearchCard key={research.id} {...research} />
+                <ResearchCard key={research.id ?? research._id} {...research} />
               ))}
             </div>
           ) : (

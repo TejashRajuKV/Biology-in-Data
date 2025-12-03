@@ -37,7 +37,9 @@ module.exports = router;
 // returns list of all research documents (most recent first)
 router.get('/', async (req, res) => {
   try {
-    const docs = await Research.find({}).sort({ createdAt: -1 }).lean();
+    let docs = await Research.find({}).sort({ createdAt: -1 }).lean();
+    // normalize each document so callers receive an `id` field in addition to `_id`
+    docs = docs.map((d) => ({ ...(d || {}), id: d._id }));
     res.json(docs);
   } catch (err) {
     console.error('Error fetching research', err);

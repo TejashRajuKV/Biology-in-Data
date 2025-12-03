@@ -3,14 +3,36 @@ import { mockResearch, references } from "../lib/mockData";
 import { ChartFrame } from "../components/ChartFrame";
 import { ArrowLeft, Calendar, Users, Tag, ExternalLink, Bookmark } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../styles/pages.module.css";
 
 export function ResearchDetailPage() {
   const { id } = useParams();
-  const research = mockResearch.find((r) => r.id === id);
   const { isAuthenticated } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
+  const [research, setResearch] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchResearch = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/research");
+        if (response.ok) {
+          const data = await response.json();
+          const foundResearch = data.find((r) => r._id === id);
+          setResearch(foundResearch || mockResearch.find((r) => r.id === id));
+        } else {
+          setResearch(mockResearch.find((r) => r.id === id));
+        }
+      } catch (error) {
+        console.error("Error fetching research:", error);
+        setResearch(mockResearch.find((r) => r.id === id));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResearch();
+  }, [id]);
 
   if (!research) {
     return (

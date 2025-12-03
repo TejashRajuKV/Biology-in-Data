@@ -4,6 +4,7 @@ import styles from "../styles/components.module.css";
 
 export function ResearchCard({
   id,
+  _id,
   title,
   abstract,
   authors,
@@ -24,8 +25,10 @@ export function ResearchCard({
     }
   };
 
+  const linkId = id || _id;
+
   return (
-    <Link to={`/research/${id}`} className={styles.researchCard}>
+    <Link to={`/research/${linkId}`} className={styles.researchCard}>
       <div className={styles.researchCardHeader}>
         <span className={`${styles.researchCategory} ${getCategoryClass(category)}`}>
           {category}

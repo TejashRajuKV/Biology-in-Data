@@ -8,11 +8,19 @@ app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
 // Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/biology-in-data';
-mongoose.connect(MONGODB_URI, {
+// Prefer `MONGO_URI` (matches `.env.example`) but also accept `MONGODB_URI` for compatibility.
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/biology-in-data';
+const isAtlas = MONGO_URI.startsWith('mongodb+srv:');
+mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => console.log('Connected to MongoDB')).catch((err) => console.error('MongoDB connection error', err));
+}).then(() => {
+  if (isAtlas) {
+    console.log('Connected to MongoDB Atlas (MONGO_URI)');
+  } else {
+    console.log('Connected to local MongoDB');
+  }
+}).catch((err) => console.error('MongoDB connection error', err));
 
 // Routes
 const researchRouter = require('./routes/research');

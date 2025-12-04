@@ -18,6 +18,19 @@ npm install
 npm run dev
 ```
 
+Using MongoDB Atlas
+
+- Create a free cluster at https://cloud.mongodb.com and add a database user with a password.
+- Whitelist your IP (or allow access from anywhere during testing) and copy the connection string.
+- Copy `.env.example` to `.env` and paste the connection string into `MONGO_URI`, replacing `<user>`, `<password>`, and the DB name.
+- Example `MONGO_URI` format:
+
+```dotenv
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.example.mongodb.net/mydb?retryWrites=true&w=majority
+```
+
+Then run `npm run dev` and the server will connect to Atlas if `MONGO_URI` is set.
+
 5. Endpoints
 
 - POST `/api/auth/register`  -> { name, email, password }

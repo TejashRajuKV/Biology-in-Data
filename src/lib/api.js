@@ -40,4 +40,21 @@ export async function getMe() {
   return request('/api/auth/me');
 }
 
-export default { register, login, getMe };
+export async function uploadResearch(research) {
+  return request('/api/research', {
+    method: 'POST',
+    body: JSON.stringify(research),
+  });
+}
+
+export async function getResearch() {
+  return request('/api/research');
+}
+
+export async function deleteResearch(id) {
+  return request(`/api/research/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export default { register, login, getMe, uploadResearch, getResearch, deleteResearch };

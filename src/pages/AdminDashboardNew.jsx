@@ -84,19 +84,34 @@ function UploadSection() {
     tags: "",
     chartJson: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Research uploaded successfully!");
-    setFormData({
-      title: "",
-      authors: "",
-      year: new Date().getFullYear().toString(),
-      abstract: "",
-      category: "genetics",
-      tags: "",
-      chartJson: "",
-    });
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { uploadResearch } = await import("../lib/api");
+      await uploadResearch(formData);
+      alert("Research uploaded successfully!");
+      setFormData({
+        title: "",
+        authors: "",
+        year: new Date().getFullYear().toString(),
+        abstract: "",
+        category: "genetics",
+        tags: "",
+        chartJson: "",
+      });
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setError(err.message || "Failed to upload research");
+      alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -196,9 +211,9 @@ function UploadSection() {
         </div>
 
         <div className={styles.formActions}>
-          <button type="submit" className={styles.primaryButton}>
+          <button type="submit" className={styles.primaryButton} disabled={loading}>
             <Upload size={20} />
-            Upload Research
+            {loading ? "Uploading..." : "Upload Research"}
           </button>
           <button type="button" className={styles.secondaryButton}>
             Cancel

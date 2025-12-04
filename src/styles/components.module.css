@@ -1,6 +1,6 @@
 /* Navbar Styles */
 .navbar {
-  background: rgba(255, 255, 255, 0.95);
+  background: #E7F5E8;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
@@ -433,7 +433,14 @@
 
 /* Footer Styles */
 .footer {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+  /* Reuse the main island artwork with a dark overlay so the end of the
+     page feels intentional and immersive. */
+  background:
+    linear-gradient(to top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.88)),
+    url("../assets/hero-floating-island.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
   color: white;
   padding: 3rem 0 1.5rem;
   margin-top: 4rem;
@@ -442,39 +449,43 @@
 .footerContainer {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 2.5rem 2rem 1.5rem;
 }
 
 .footerGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 2.25rem;
+  align-items: flex-start;
 }
 
 .footerSection h3 {
   color: white;
-  margin-bottom: 1rem;
-  font-size: 1.125rem;
+  margin-bottom: 1.1rem;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
 }
 
 .footerLink {
   display: block;
-  color: #8899a6;
+  color: #aeb8c4;
   text-decoration: none;
-  margin-bottom: 0.5rem;
-  transition: color 0.2s;
+  margin-bottom: 0.55rem;
+  font-size: 0.95rem;
+  transition: color 0.18s ease;
 }
 
 .footerLink:hover {
-  color: #66BB6A;
+  color: #e5f7eb;
 }
 
 .footerBottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   padding-top: 1.5rem;
   text-align: center;
-  color: #8899a6;
+  color: #9aa6b5;
+  font-size: 0.9rem;
 }
 
 /* Loading Spinner */
@@ -491,4 +502,54 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.researchCard:hover .read-more-indicator {
+  opacity: 1 !important;
+}
+.social-link:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.6s ease-out;
 }

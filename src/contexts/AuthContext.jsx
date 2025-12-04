@@ -40,6 +40,20 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
+      // Frontend demo fallback: allow the hard-coded admin credentials even
+      // if there is no backend running or it does not have this user.
+      if (email === 'admin@biodata.com' && password === 'admin123') {
+        const demoUser = {
+          name: 'Admin',
+          email,
+          role: 'admin',
+          isAdmin: true,
+        };
+        localStorage.setItem('token', 'demo-admin-token');
+        setUser(demoUser);
+        return true;
+      }
+
       const res = await api.login(email, password);
       // expected { token, user }
       if (res?.token) {
@@ -85,7 +99,7 @@ export function AuthProvider({ children }) {
         register,
         logout,
         isAuthenticated: !!user,
-        isAdmin: user?.role === "admin",
+        isAdmin: user?.isAdmin || user?.role === "admin",
       }}
     >
       {children}

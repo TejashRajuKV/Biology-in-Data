@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "../components/SearchBarNew";
 import { ResearchCard } from "../components/ResearchCardNew";
-import { mockResearch, categories } from "../lib/mockData";
+import { categories } from "../lib/mockData";
 import { Filter, Grid, List } from "lucide-react";
 import styles from "../styles/ResearchListPage.module.css";
 
@@ -9,8 +9,23 @@ export function ResearchListPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
+  const [researchList, setResearchList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResearch = mockResearch.filter((research) => {
+  useEffect(() => {
+    fetch("http://localhost:4000/api/research")
+      .then((res) => res.json())
+      .then((data) => {
+        setResearchList(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching research:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const filteredResearch = researchList.filter((research) => {
     const matchesSearch =
       research.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       research.abstract.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -53,9 +68,6 @@ export function ResearchListPage() {
                     }`}
                   >
                     <span>{category.name}</span>
-                    <span className={styles.categoryCount}>
-                      {category.count}
-                    </span>
                   </button>
                 ))}
               </div>
@@ -111,19 +123,29 @@ export function ResearchListPage() {
 
           {/* Results Count */}
           <div className={styles.resultsCount}>
-            Found {filteredResearch.length} research{" "}
-            {filteredResearch.length === 1 ? "paper" : "papers"}
+            {loading ? (
+              "Loading research..."
+            ) : (
+              <>
+                Found {filteredResearch.length} research{" "}
+                {filteredResearch.length === 1 ? "paper" : "papers"}
+              </>
+            )}
           </div>
 
           {/* Research Grid/List */}
-          {filteredResearch.length > 0 ? (
+          {loading ? (
+            <div className={styles.noResults}>
+              <p className={styles.noResultsText}>Loading...</p>
+            </div>
+          ) : filteredResearch.length > 0 ? (
             <div
               className={
                 viewMode === "grid" ? styles.researchGrid : styles.researchList
               }
             >
               {filteredResearch.map((research) => (
-                <ResearchCard key={research.id} {...research} />
+                <ResearchCard key={research._id} {...research} id={research._id} />
               ))}
             </div>
           ) : (

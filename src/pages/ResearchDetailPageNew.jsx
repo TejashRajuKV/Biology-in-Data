@@ -16,12 +16,13 @@ export function ResearchDetailPage() {
   useEffect(() => {
     const fetchResearch = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/research");
+        const response = await fetch(`http://localhost:4000/api/research/${id}`);
         if (response.ok) {
           const data = await response.json();
-          const foundResearch = data.find((r) => r._id === id);
-          setResearch(foundResearch || mockResearch.find((r) => r.id === id));
+          setResearch(data);
         } else {
+          // Fallback to mock if not found (or handle error)
+          console.error("Research not found in API");
           setResearch(mockResearch.find((r) => r.id === id));
         }
       } catch (error) {
